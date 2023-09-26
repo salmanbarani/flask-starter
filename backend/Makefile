@@ -28,8 +28,8 @@ down:
 logs:
 	$(COMPOSE_RUN) logs 
 
-test:
-	$(COMPOSE_RUN) run --rm --no-deps --entrypoint=python api test.py
+test: up
+	$(COMPOSE_RUN) run --rm --no-deps --entrypoint=pytest api ./tests/unit ./tests/integration ./tests/e2e
 
 sh:
 	$(COMPOSE_RUN) run --rm -it api sh

@@ -3,6 +3,7 @@ sqlalchemy
 flask
 psycopg2-binary
 redis
+werkzeug==2.2.2
 
 # dev/tests
 pytest
