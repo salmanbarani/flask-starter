@@ -9,8 +9,8 @@ services:
         container_name: flask-api
         volumes:
             - .:/app
-        expose:
-            - "5000"
+        ports:
+            - "5000:5000"
         env_file:
             - ./.envs/.local/.flask
             - ./.envs/.local/.postgres
@@ -45,41 +45,6 @@ services:
         container_name: redis
         networks:
             - flask-starter-api-live
-    celery_worker:
-        build:
-            context: .
-            dockerfile: ./docker/local/flask/Dockerfile
-        command: /start-celeryworker
-        container_name: celery_worker
-        volumes:
-            - .:/app
-        env_file:
-            - ./.envs/.local/.flask
-            - ./.envs/.local/.postgres
-        depends_on:
-            - redis
-            - postgres
-            - mailhog
-        networks:
-            - flask-starter-api-live 
-    flower:
-        build:
-            context: .
-            dockerfile: ./docker/local/flask/Dockerfile
-        command: /start-flower
-        container_name: flower
-        volumes:
-            - .:/app
-        env_file:
-            - ./.envs/.local/.flask
-            - ./.envs/.local/.postgres
-        ports:
-            - "5555:5555"
-        depends_on:
-            - redis
-            - postgres
-        networks:
-            - flask-starter-api-live 
 
     nginx:
         restart: always

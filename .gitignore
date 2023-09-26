@@ -18,7 +18,7 @@ env/
 .pytest_cache/
 .idea/
 .vscode/
-
+.envs/
 coverage.xml
 development.yml
 htmlcov/
