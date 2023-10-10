@@ -1,22 +1,23 @@
 from __future__ import annotations
-from datetime import date, datetime
-from typing import List, Set
+from datetime import datetime
+from . import utils
 
+algo = utils.get_password_hash_generator()
 class User:
     """
         User model represents everything related to user
     """
-    def __init__(self, username, email, password,first_name, last_name,
-                created_at, updated_at) -> None:
+    def __init__(self, username, email, password,first_name, last_name, is_active,
+                is_admin, created_at, updated_at) -> None:
         self.username = username
         self.email = email
-        password = password
-        first_name = first_name
-        last_name = last_name
-        is_active = is_active
-        is_admin = is_admin
-        created_at = created_at
-        updated_at = updated_at 
+        self.password = password
+        self.first_name = first_name
+        self.last_name = last_name
+        self.is_active = is_active
+        self.is_admin = is_admin
+        self.created_at = created_at
+        self.updated_at = updated_at 
 
     def __repr__(self) -> str:
         return f"<User {self.username}>"
@@ -36,3 +37,16 @@ class User:
     def full_name(self):
         return f"{self.first_name} {self.last_name}"
     
+    def check_password(self, password: str) -> bool:
+        return algo.check_password_hash(self.password, password)
+
+    @classmethod
+    def create_user(cls, username:str, email:str, password:str, *args, **kwargs) -> User:
+        password = algo.generate_hash_password(password)
+        now = datetime.now()
+        kwargs["created_at"] = now
+        kwargs["updated_at"] = now
+        return cls(username, email, password, *args, **kwargs)
+    
+    def set_password(self, new_password: str) -> None:
+        self.password = algo.generate_hash_password(new_password)
