@@ -1,6 +1,7 @@
 from __future__ import annotations
 from datetime import datetime
-from . import utils
+from . import utils, exceptions
+from typing import Optional, Set
 
 algo = utils.get_password_hash_generator()
 class User:
@@ -28,7 +29,7 @@ class User:
         return (__value.username == self.username) or (__value.email == self.email)
 
     def __hash__(self) -> int:
-        return hash(self.username + self.email)
+        return hash((self.username , self.email))
     
     def __gt__(self, __value):
         return self.created_at > __value.created_at
@@ -50,3 +51,21 @@ class User:
     
     def set_password(self, new_password: str) -> None:
         self.password = algo.generate_hash_password(new_password)
+
+
+class Auth:
+    """
+        Main entrypoint that works as an aggregator
+    """
+    def __init__(self, users:Set[User], version_number: int=0) -> None:
+        self.users = users
+        self.version_number = version_number
+
+    def create_user(self, user:User) -> User:
+        if user in self.users:
+            raise exceptions.UserAlreadyExist("A user already exists with this username or email")
+        self.users.add(user)
+        self.version_number += 1
+
+    def __str__(self) -> str:
+        return f"{len(self.users)}"

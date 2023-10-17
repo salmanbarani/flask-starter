@@ -1,6 +1,6 @@
 import pytest
 from datetime import datetime
-from src.domain.user_models import User
+from src.domain.user_models import User, Auth
 
 def get_user_data(username="sample-username", email="sample@email.com", password="pass1234", first_name="fname",
                   last_name="lname", is_active=True, is_admin=False, created_at=datetime.now(), updated_at=datetime.now()):
@@ -60,3 +60,25 @@ def test_set_password():
     assert password == user.password
     user.set_password(password)
     assert password != user.password
+
+def test_user_hash_works_has_expected():
+    user_a = User(**get_user_data())
+
+    modified_data = get_user_data()
+    modified_data['email'] = "differnt@email.org"
+    
+    user_b = User(**modified_data)
+
+    print(user_a.__hash__() == user_b.__hash__(), user_a == user_b)
+
+    pytest.fail()
+
+    
+def test_create_auth():
+    auth = Auth(set())
+    assert str(auth) == "0"
+
+    user = User(**get_user_data())
+    auth.create_user(user)
+    assert str(auth) == "1"
+
