@@ -35,4 +35,4 @@ user = Table(
 
 def start_mappers():
     logger.info("Starting mappers")
-    # mapper(user_models.User, user)
+    mapper(user_models.User, user)

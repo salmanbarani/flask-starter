@@ -11,13 +11,10 @@ def in_memory_sqlite_db():
 
 @pytest.fixture
 def sqlite_session_factory(in_memory_sqlite_db):
-    yield sessionmaker(bind=in_memory_sqlite_db)
-
-@pytest.fixture
-def mappers():
     start_mappers()
-    yield
+    yield sessionmaker(bind=in_memory_sqlite_db)
     clear_mappers()
+
 
 @pytest.fixture
 def session(sqlite_session_factory):
