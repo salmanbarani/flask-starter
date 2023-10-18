@@ -1,12 +1,12 @@
 from __future__ import annotations
 from datetime import datetime
 from . import utils, exceptions
-from typing import Optional, Set
+from typing import Optional, Set, List
 
 algo = utils.get_password_hash_generator()
 class User:
     """
-        User model represents everything related to user
+        User model 
     """
     def __init__(self, username, email, password,first_name, last_name, is_active,
                 is_admin, created_at, updated_at) -> None:
@@ -52,20 +52,38 @@ class User:
     def set_password(self, new_password: str) -> None:
         self.password = algo.generate_hash_password(new_password)
 
-
-class Auth:
+class UserLog:
     """
-        Main entrypoint that works as an aggregator
+        Stores all logs related to each user
     """
-    def __init__(self, users:Set[User], version_number: int=0) -> None:
-        self.users = users
-        self.version_number = version_number
-
-    def create_user(self, user:User) -> User:
-        if user in self.users:
-            raise exceptions.UserAlreadyExist("A user already exists with this username or email")
-        self.users.add(user)
-        self.version_number += 1
+    def __init__(self, user_id:int, log_type:str, description:str, log_time:str) -> None:
+        self.user_id = user_id
+        self.log_type = log_type 
+        self.description = description
+        self.log_time = log_time 
 
     def __str__(self) -> str:
-        return f"{len(self.users)}"
+        return f"UserLog {self.user_id}, {self.log_time}"
+    
+    def __repr__(self) -> str:
+        return f"UserLog {self.user_id}, {self.log_type}, {self.log_time}"
+
+
+
+class Account:
+    """
+        Main entrypoint to work with User and other related Models
+    """
+    def __init__(self, user:User, logs=List[UserLog], version_number: int=0) -> None:
+        self.user = user
+        self.logs = logs
+        self.version_number = version_number
+        self.events = [] # type of List[events.Event]
+
+    def create_user(self, user:User) -> User:
+        self.user = user
+        self.version_number += 1
+        #TODO: trigger an event
+
+    def __str__(self) -> str:
+        return f"Account {self.user.username}"
