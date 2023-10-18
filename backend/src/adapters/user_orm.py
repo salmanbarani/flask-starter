@@ -6,6 +6,9 @@ from sqlalchemy import (
     String,
     Date,
     Boolean,
+    ForeignKey,
+    DateTime,
+    event
 )
 
 from sqlalchemy.orm import registry
@@ -28,11 +31,33 @@ user = Table(
     Column("last_name", String(255), nullable=True),
     Column("is_active", Boolean, default=True, nullable=True),
     Column("is_admin", Boolean, default=False, nullable=True),
-    Column("created_at", Date, nullable=False),
-    Column("updated_at", Date, nullable=False)
+    Column("created_at", Date, nullable=False), # TODO: change it to DateTime
+    Column("updated_at", Date, nullable=False)  # TODO: change it to DateTime
 )
 
+user_logs = Table(
+    "userlogs",
+    metadata,
+    Column("id", Integer, primary_key=True, autoincrement=True),
+    Column("user_id", ForeignKey("user.id"), unique=True, nullable=False),
+    Column("log_type", String(50), nullable=False),
+    Column("description", String(255), nullable=True),
+    Column("log_time", DateTime)
+)
+
+account = Table(
+    "accounts",
+    metadata,
+    Column("id", Integer, primary_key=True, autoincrement=True),
+    Column("user", ForeignKey("user.id"), unique=True, nullable=False),
+    Column("version_number", Integer, nullable=False, server_default="0"),
+    Column("logs", ForeignKey("logs.id"))
+)
 
 def start_mappers():
     logger.info("Starting mappers")
     mapper(user_models.User, user)
+
+@event.listens_for(user_models.Account, "load")
+def receive_load(account, _):
+    account.events = []
