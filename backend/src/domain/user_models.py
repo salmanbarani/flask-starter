@@ -74,8 +74,8 @@ class Account:
     """
         Main entrypoint to work with User and other related Models
     """
-    def __init__(self, user:User, logs=List[UserLog], version_number: int=0) -> None:
-        self.user = user
+    def __init__(self, user_id:int, logs=List[UserLog], version_number: int=0) -> None:
+        self.user_id = user_id 
         self.logs = logs
         self.version_number = version_number
         self.events = [] # type of List[events.Event]
@@ -86,4 +86,4 @@ class Account:
         #TODO: trigger an event
 
     def __str__(self) -> str:
-        return f"Account {self.user.username}"
+        return f"Account {self.user_id}"

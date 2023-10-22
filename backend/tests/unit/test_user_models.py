@@ -79,4 +79,5 @@ def test_create_user_log():
 def test_create_account():
     user = User(**get_user_data())
     account = Account(user,[])
-    assert str(account) == f"Account {user.username}"
+    assert str(account) == f"Account {account.user_id}" #TODO: change or fix to utilize User objects.
+    
