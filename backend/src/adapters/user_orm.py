@@ -11,7 +11,7 @@ from sqlalchemy import (
     event
 )
 
-from sqlalchemy.orm import registry
+from sqlalchemy.orm import registry, relationship
 
 from src.domain import user_models
 
@@ -57,8 +57,17 @@ account = Table(
 def start_mappers():
     logger.info("Starting mappers")
     mapper(user_models.User, user)
-    mapper(user_models.Account, account)
-    mapper(user_models.UserLog, user_logs)
+    user_logs_mapper = mapper(user_models.UserLog, user_logs)
+    mapper(
+        user_models.Account, 
+        account,
+        properties = {
+            "_userlogs": relationship(
+               user_logs_mapper,
+               collection_class=set, 
+            )
+        } 
+        )
 
 @event.listens_for(user_models.Account, "load")
 def receive_load(account, _):

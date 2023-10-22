@@ -1,6 +1,17 @@
 import abc
 import werkzeug.security as hash_algorithem 
-
+from dataclasses import dataclass
+@dataclass(unsafe_hash=True)
+class UserLogTypes:
+    """
+        Log types related to User models. 
+    """
+    USER_CREATED = "USER-CREATED"
+    USER_UPDATED = "USER-UPDATED"
+    USER_DELETED = "USER-DELETED"
+    USER_RESET_PASSWORD = "USER-RESET-PASSWORD"
+    USER_LOGGED_IN = "USER-LOGGED-IN"
+    USER_LOGGED_OUT = "USER-LOGGED-OUT" 
 
 class BasePasswordHashGenerator(abc.ABC):
     """

@@ -70,14 +70,14 @@ def test_create_user_log():
         "user_id": 1,
         "log_type": "user-created",
         "description": "salmnAndB was created.",
-        "log_time": now 
+        "log_time": now
     }
     user_log = UserLog(**data)
-    assert str(user_log) == f"UserLog 1, {now}" 
+    for key in data.keys():
+        assert getattr(user_log, key) == data[key] 
 
 
 def test_create_account():
     user = User(**get_user_data())
     account = Account(user,[])
-    assert str(account) == f"Account {account.user_id}" #TODO: change or fix to utilize User objects.
-    
+    assert str(account) == f"Account {account.user_id}" #TODO: change or fix to utilize User objects. 

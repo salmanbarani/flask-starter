@@ -1,5 +1,6 @@
 from __future__ import annotations
 from datetime import datetime
+from dataclasses import dataclass
 from . import utils, exceptions
 from typing import Optional, Set, List
 
@@ -52,31 +53,24 @@ class User:
     def set_password(self, new_password: str) -> None:
         self.password = algo.generate_hash_password(new_password)
 
+@dataclass(unsafe_hash=True)
 class UserLog:
     """
         Stores all logs related to each user
     """
-    def __init__(self, user_id:int, log_type:str, description:str, log_time:str) -> None:
-        self.user_id = user_id
-        self.log_type = log_type 
-        self.description = description
-        self.log_time = log_time 
-
-    def __str__(self) -> str:
-        return f"UserLog {self.user_id}, {self.log_time}"
-    
-    def __repr__(self) -> str:
-        return f"UserLog {self.user_id}, {self.log_type}, {self.log_time}"
-
+    user_id: str 
+    log_type: str
+    description: str
+    log_time:str
 
 
 class Account:
     """
         Main entrypoint to work with User and other related Models
     """
-    def __init__(self, user_id:int, logs=List[UserLog], version_number: int=0) -> None:
+    def __init__(self, user_id:int, version_number: int=0) -> None:
         self.user_id = user_id 
-        self.logs = logs
+        self._userlogs = set() # type of Set[UserLog]
         self.version_number = version_number
         self.events = [] # type of List[events.Event]
 
@@ -84,6 +78,7 @@ class Account:
         self.user = user
         self.version_number += 1
         #TODO: trigger an event
+        #NOTE: log USER-CREATE 
 
     def __str__(self) -> str:
         return f"Account {self.user_id}"
