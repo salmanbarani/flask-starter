@@ -81,4 +81,4 @@ class Account:
         #NOTE: log USER-CREATE 
 
     def __str__(self) -> str:
-        return f"Account {self.user_id}"
+        return f"Account {self}"

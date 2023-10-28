@@ -35,11 +35,11 @@ user = Table(
     Column("updated_at", Date, nullable=False)  # TODO: change it to DateTime
 )
 
-user_logs = Table(
+userlog = Table(
     "userlogs",
     metadata,
     Column("id", Integer, primary_key=True, autoincrement=True),
-    Column("user_id", ForeignKey("users.id"), unique=True, nullable=False),
+    Column("user_id", ForeignKey("users.id"), nullable=False),
     Column("log_type", String(50), nullable=False),
     Column("description", String(255), nullable=True),
     Column("log_time", DateTime)
@@ -49,21 +49,29 @@ account = Table(
     "accounts",
     metadata,
     Column("id", Integer, primary_key=True, autoincrement=True),
-    Column("user", ForeignKey("users.id"), unique=True, nullable=False),
+    Column("user_id", ForeignKey("users.id"), unique=True, nullable=False),
     Column("version_number", Integer, nullable=False, server_default="0"),
-    Column("logs", ForeignKey("userlogs.id"))
+)
+
+logs = Table(
+    "logs",
+    metadata,
+    Column("id", Integer, primary_key=True, autoincrement=True),
+    Column("account_id", ForeignKey("accounts.id")),
+    Column("userlog_id", ForeignKey("userlogs.id")),
 )
 
 def start_mappers():
     logger.info("Starting mappers")
     mapper(user_models.User, user)
-    user_logs_mapper = mapper(user_models.UserLog, user_logs)
+    userlog_mapper = mapper(user_models.UserLog, userlog)
     mapper(
         user_models.Account, 
         account,
-        properties = {
+        properties={
             "_userlogs": relationship(
-               user_logs_mapper,
+               userlog_mapper,
+               secondary=logs,
                collection_class=set, 
             )
         } 
@@ -72,3 +80,6 @@ def start_mappers():
 @event.listens_for(user_models.Account, "load")
 def receive_load(account, _):
     account.events = []
+
+
+#TODO: apply like e-commerce, userlog should be n-n
