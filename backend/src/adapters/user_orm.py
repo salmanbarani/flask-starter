@@ -49,7 +49,7 @@ account = Table(
     "accounts",
     metadata,
     Column("id", Integer, primary_key=True, autoincrement=True),
-    Column("user_id", ForeignKey("users.id"), unique=True, nullable=False),
+    Column("user", ForeignKey("users.username"), unique=True, nullable=False),
     Column("version_number", Integer, nullable=False, server_default="0"),
 )
 

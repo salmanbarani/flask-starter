@@ -68,17 +68,32 @@ class Account:
     """
         Main entrypoint to work with User and other related Models
     """
-    def __init__(self, user_id:int, version_number: int=0) -> None:
-        self.user_id = user_id 
+    def __init__(self, version_number: int=0) -> None:
+        self.user = None  # NOTE: it must be in set using user_set
         self._userlogs = set() # type of Set[UserLog]
         self.version_number = version_number
         self.events = [] # type of List[events.Event]
 
-    def create_user(self, user:User) -> User:
-        self.user = user
+    def set_user(self, user:User) -> User:
+        self.user = user.username
         self.version_number += 1
         #TODO: trigger an event
         #NOTE: log USER-CREATE 
 
+    def add_log(self, userlog: UserLog):
+        self._userlogs.add(userlog)
+
+
     def __str__(self) -> str:
-        return f"Account {self}"
+        return f"Account {self.user}"
+    
+    def __repr__(self) -> str:
+        return f"<Account {self.user}>"
+    
+    def __eq__(self, __value: object) -> bool:
+        if not isinstance(__value,Account):
+            return False
+        return (__value.user == self.user)
+
+    def __hash__(self) -> int:
+        return hash((self.user))

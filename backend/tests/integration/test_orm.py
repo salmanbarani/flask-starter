@@ -3,6 +3,9 @@ from src.domain.user_models import User, UserLog, Account
 from src.domain.utils import UserLogTypes
 import pytest
 from sqlalchemy import text
+from sqlalchemy.exc import IntegrityError
+
+
 
 def get_sample_data():
    return {
@@ -45,8 +48,15 @@ def insert_a_sample_user_log(session):
     session.add(user_log)
     session.commit()
 
-
-
+def insert_a_sample_account(session):
+    insert_a_sample_user(session)
+    account_data = {'user': 1, 'version_number': 1}
+    session.execute(
+        text(
+            'INSERT INTO accounts (user, version_number) '
+            'VALUES (:user, :version_number);'
+        ), account_data)
+    session.commit()
 
 def test_user_mapper_can_load_data(session):
     session.execute(
@@ -82,86 +92,131 @@ def test_creating_sample_user_with_hash_generated_password(session):
     user_from_db = session.query(User).all()[0]
     assert get_sample_data()['password']!= user_from_db.password and len(user_from_db.password) > 0
 
-# def test_user_logs_mapper_can_load_data(session):
-#     user_log_data = get_sample_user_log()
-#     insert_a_sample_user(session)
-#     user_id= session.execute(text('SELECT id FROM users;')).fetchone()[0]
-#     user_log_data["user_id"] = user_id
+def test_user_logs_mapper_can_load_data(session):
+    user_log_data = get_sample_user_log()
+    insert_a_sample_user(session)
+    user_id= session.execute(text('SELECT id FROM users;')).fetchone()[0]
+    user_log_data["user_id"] = user_id
 
-#     session.execute(
-#         text(
-#             'INSERT INTO userlogs (user_id, log_type, description, log_time) '
-#             'VALUES (:user_id, :log_type, :description, :log_time);'
-#         ), user_log_data)
+    session.execute(
+        text(
+            'INSERT INTO userlogs (user_id, log_type, description, log_time) '
+            'VALUES (:user_id, :log_type, :description, :log_time);'
+        ), user_log_data)
 
-#     expected = [UserLog(**user_log_data)]
+    expected = [UserLog(**user_log_data)]
 
-#     result = session.query(UserLog).all()
-#     print(expected,"\n", result)
-#     assert result == expected
+    result = session.query(UserLog).all()
+    print(expected,"\n", result)
+    assert result == expected
 
 
-# def test_sever_user_logs(session):
-#     """Test that each user can have severl logs"""
-#     user_log_data = get_sample_user_log()
-#     insert_a_sample_user(session)
-#     user_id= session.execute(text('SELECT id FROM users;')).fetchone()[0]
-#     user_log_data["user_id"] = user_id
+def test_sever_user_logs(session):
+    """Test that each user can have severl logs"""
+    user_log_data = get_sample_user_log()
+    insert_a_sample_user(session)
+    user_id= session.execute(text('SELECT id FROM users;')).fetchone()[0]
+    user_log_data["user_id"] = user_id
 
-#     session.execute(
-#         text(
-#             'INSERT INTO userlogs (user_id, log_type, description, log_time) '
-#             'VALUES (:user_id, :log_type, :description, :log_time);'
-#         ), user_log_data)
+    session.execute(
+        text(
+            'INSERT INTO userlogs (user_id, log_type, description, log_time) '
+            'VALUES (:user_id, :log_type, :description, :log_time);'
+        ), user_log_data)
 
-#     user_log_data['log_type'] = UserLogTypes.USER_LOGGED_IN
-#     user_log_data['description'] = "user just loged in"
-#     user_log_data['log_time'] = datetime.now()
+    user_log_data['log_type'] = UserLogTypes.USER_LOGGED_IN
+    user_log_data['description'] = "user just loged in"
+    user_log_data['log_time'] = datetime.now()
 
-#     # adding logs for the second log
-#     session.execute(
-#         text(
-#             'INSERT INTO userlogs (user_id, log_type, description, log_time) '
-#             'VALUES (:user_id, :log_type, :description, :log_time);'
-#         ), user_log_data)
-#     session.commit()
+    # adding logs for the second log
+    session.execute(
+        text(
+            'INSERT INTO userlogs (user_id, log_type, description, log_time) '
+            'VALUES (:user_id, :log_type, :description, :log_time);'
+        ), user_log_data)
+    session.commit()
 
-#     result = session.query(UserLog).all()
+    result = session.query(UserLog).all()
     
-#     for userlog in result:
-#         assert userlog.log_type in {UserLogTypes.USER_CREATED, UserLogTypes.USER_LOGGED_IN}
+    for userlog in result:
+        assert userlog.log_type in {UserLogTypes.USER_CREATED, UserLogTypes.USER_LOGGED_IN}
 
 
-# def test_user_log_mapper_can_save_data(session):
-#     user_log_data = get_sample_user_log()
-#     insert_a_sample_user(session)
-#     user_id= session.execute(text('SELECT id FROM users;')).fetchone()[0]
-#     user_log_data["user_id"] = user_id
+def test_user_log_mapper_can_save_data(session):
+    user_log_data = get_sample_user_log()
+    insert_a_sample_user(session)
+    user_id= session.execute(text('SELECT id FROM users;')).fetchone()[0]
+    user_log_data["user_id"] = user_id
 
-#     user_log = UserLog(**user_log_data)
-#     session.add(user_log)
-#     session.commit()
+    user_log = UserLog(**user_log_data)
+    session.add(user_log)
+    session.commit()
 
-#     rows = list(session.execute(text('SELECT user_id, log_type FROM userlogs;')))
-#     assert [(user_id, UserLogTypes.USER_CREATED)] == rows
+    rows = list(session.execute(text('SELECT user_id, log_type FROM userlogs;')))
+    assert [(user_id, UserLogTypes.USER_CREATED)] == rows
 
-# def test_account_mapper_can_save_data(session):
-#     insert_a_sample_user_log(session)
-#     account_data = {'user_id': 1, 'version_number': 1}
-#     session.execute(
-#         text(
-#             'INSERT INTO accounts (user_id, version_number) '
-#             'VALUES (:user_id, :version_number);'
-#         ), account_data)
+def test_account_mapper_can_load_data(session):
+    insert_a_sample_user(session)
+    account_data = {'user': "salman", 'version_number': 1}
+    session.execute(
+        text(
+            'INSERT INTO accounts (user, version_number) '
+            'VALUES (:user, :version_number);'
+        ), account_data)
+    result = session.query(Account).all()
 
-#     expected = [Account(**account_data)]
+    assert account_data["user"] == result[0].user
 
-#     result = session.query(Account).all()
+def test_two_accounts_with_the_same_user_not_possible(session):
+    # Inserting the first user with id 1 
+    insert_a_sample_user(session)
+    account_data = {'user': "salman", 'version_number': 1}
+    session.execute(
+        text(
+            'INSERT INTO accounts (user, version_number) '
+            'VALUES (:user, :version_number);'
+        ), account_data)
+    session.commit()
+    result = session.query(Account).all()
+    assert account_data['user'] == result[0].user
+
+    # inserting the second account with user id 1 fails
+    try: 
+        session.execute(
+         text(
+            'INSERT INTO accounts (user, version_number) '
+            'VALUES (:user, :version_number);'
+         ), account_data)
+    except IntegrityError: # Raises UNIQUE constrained type error
+        pass
+
+def test_account_mapper_save_data(session):
+    insert_a_sample_user(session)
+    account_data = {'version_number': 5}
+    account = Account(**account_data)
+    account.set_user(User(**get_sample_data()))
+    session.add(account)
+    session.commit()
+
+    rows = list(session.execute(text('SELECT id, version_number FROM accounts;')))
+    assert [(1, 6)] == rows
+
+def test_account_set_user(session):
+    user = User.create_user(**get_sample_data())
+    account = Account() 
+    account.set_user(user)
+    assert account.version_number == 1 
+    session.add(account)
+    session.commit()
+
+#TODO:
+#    TASKS:
+#       1. continue testing that user is set and stored in db correctly
+#       2. test user_log is added to account
+#       3. test multiple users are added to account
+#       4. test account with None user value is not stored in DB
 
 
 
-#     pytest.fail()
 
 
-
-    

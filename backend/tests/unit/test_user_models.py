@@ -61,9 +61,6 @@ def test_set_password():
     user.set_password(password)
     assert password != user.password
     
-def test_create_account():
-    user = User(**get_user_data())
-
 def test_create_user_log():
     now = datetime.now()
     data = {
@@ -79,5 +76,16 @@ def test_create_user_log():
 
 def test_create_account():
     user = User(**get_user_data())
-    account = Account(user,[])
-    assert str(account) == f"Account {account.user_id}" #TODO: change or fix to utilize User objects. 
+    account = Account()
+    account.set_user(user)
+    assert str(account) == f"Account {account.user}" #TODO: change or fix to utilize User objects. 
+
+def test_account_set_user():
+    user = User.create_user(**get_user_data())
+    account = Account()
+    assert account.user == None
+    assert account.version_number == 0
+
+    account.set_user(user)
+    assert account.user == user.username
+    assert account.version_number == 1 
