@@ -1,7 +1,7 @@
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import clear_mappers, sessionmaker
-from src.adapters.user_orm import metadata, start_mappers
+from src.adapters.orm.user_orm import metadata, start_mappers
 
 @pytest.fixture
 def in_memory_sqlite_db():
