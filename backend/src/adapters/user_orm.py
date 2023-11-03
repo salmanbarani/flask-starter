@@ -39,7 +39,7 @@ userlog = Table(
     "userlogs",
     metadata,
     Column("id", Integer, primary_key=True, autoincrement=True),
-    Column("user_id", ForeignKey("users.id"), nullable=False),
+    Column("user", ForeignKey("users.username"), nullable=False),
     Column("log_type", String(50), nullable=False),
     Column("description", String(255), nullable=True),
     Column("log_time", DateTime)

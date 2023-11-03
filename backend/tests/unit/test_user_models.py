@@ -64,7 +64,7 @@ def test_set_password():
 def test_create_user_log():
     now = datetime.now()
     data = {
-        "user_id": 1,
+        "user": "some-user-name",
         "log_type": "user-created",
         "description": "salmnAndB was created.",
         "log_time": now

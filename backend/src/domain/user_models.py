@@ -58,10 +58,10 @@ class UserLog:
     """
         Stores all logs related to each user
     """
-    user_id: str 
-    log_type: str
+    user: str  # User.username
+    log_type: str # UserLogTypes.
     description: str
-    log_time:str
+    log_time:str # datetime
 
 
 class Account:
