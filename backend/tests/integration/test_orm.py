@@ -1,6 +1,6 @@
 from datetime import date, datetime
-from src.domain.user_models import User, UserLog, Account
-from src.domain.utils import UserLogTypes
+from src.domain.users.user_models import User, UserLog, Account
+from src.domain.users.utils import UserLogTypes
 import pytest
 from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError

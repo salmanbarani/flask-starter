@@ -1,5 +1,5 @@
 import pytest
-from src.domain import utils
+from src.domain.users import utils
     
 VALUE_TO_HASH = "sample-value-to-hash"
 

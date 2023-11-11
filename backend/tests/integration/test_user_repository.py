@@ -2,7 +2,7 @@ import pytest
 from datetime import datetime
 
 from src.adapters.repositories import user_repository
-from src.domain import user_models
+from src.domain.users import user_models
 
 
 def get_user_data(username="sample-username", email="sample@email.com", password="pass1234", first_name="fname",

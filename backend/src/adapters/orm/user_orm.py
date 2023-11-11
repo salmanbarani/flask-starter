@@ -13,7 +13,7 @@ from sqlalchemy import (
 
 from sqlalchemy.orm import registry, relationship
 
-from src.domain import user_models
+from src.domain.users import user_models
 
 logger = logging.getLogger(__name__)
 

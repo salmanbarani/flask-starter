@@ -1,6 +1,6 @@
 import pytest
 from datetime import datetime
-from src.domain.user_models import User, Account, UserLog
+from src.domain.users.user_models import User, Account, UserLog
 
 def get_user_data(username="sample-username", email="sample@email.com", password="pass1234", first_name="fname",
                   last_name="lname", is_active=True, is_admin=False, created_at=datetime.now(), updated_at=datetime.now()):

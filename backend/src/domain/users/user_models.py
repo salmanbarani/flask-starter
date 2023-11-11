@@ -1,7 +1,9 @@
 from __future__ import annotations
 from datetime import datetime
 from dataclasses import dataclass
-from . import utils, exceptions
+
+from . import exceptions
+from . import utils
 from typing import Optional, Set, List
 
 algo = utils.get_password_hash_generator()
@@ -9,8 +11,7 @@ class User:
     """
         User model 
     """
-    def __init__(self, username, email, password,first_name, last_name, is_active,
-                is_admin, created_at, updated_at) -> None:
+    def __init__(self, username, email, password,first_name, last_name, created_at, updated_at, is_active=True, is_admin=False) -> None:
         self.username = username
         self.email = email
         self.password = password

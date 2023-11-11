@@ -2,7 +2,7 @@ import abc
 from typing import Set
 
 from ..orm import user_orm
-from src.domain import user_models
+from src.domain.users import user_models
 
 class AbstractUserRepository(abc.ABC):
     """
