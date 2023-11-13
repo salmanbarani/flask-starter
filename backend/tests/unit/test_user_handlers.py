@@ -32,11 +32,8 @@ def test_create_account_already_created_raises_error(session):
     
     assert repo.get(user_data['username']).version_number == 1
 
-    try:
+    with pytest.raises(user_handlers.UserAlreadyExist):
         user_handlers.create_account(cmd, repo)
-        assert False
-    except user_handlers.UserAlreadyExist:
-        pass
 
 
 

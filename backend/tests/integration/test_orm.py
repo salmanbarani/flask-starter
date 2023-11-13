@@ -173,14 +173,12 @@ def test_two_accounts_with_the_same_user_not_possible(session):
     assert account_data['user'] == result[0].user
 
     # inserting the second account with user id 1 fails
-    try: 
+    with pytest.raises(IntegrityError): 
         session.execute(
          text(
             'INSERT INTO accounts (user, version_number) '
             'VALUES (:user, :version_number);'
          ), account_data)
-    except IntegrityError: # Raises UNIQUE constrained type error
-        pass
 
 def test_account_mapper_save_data(session):
     insert_a_sample_user(session)
@@ -213,11 +211,8 @@ def test_account_can_not_be_stored_in_db_without_user(session):
     assert account.user is None
     session.add(account)
     
-    try:
+    with pytest.raises(IntegrityError):
         session.commit()
-        assert False
-    except IntegrityError:
-        pass
 
 def test_user_log_can_be_added_to_account(session):
     account = Account() 
