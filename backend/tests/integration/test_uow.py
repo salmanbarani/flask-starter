@@ -70,4 +70,24 @@ def test_rolls_back_on_error(sqlite_session_factory):
     )).fetchall()
 
     assert rows == []
-            
+
+
+def test_concurrent_updates_to_version_are_not_allowed(postgres_session_factory):
+    session = postgres_session_factory()
+    rows = session.execute(text("SELECT version_number, user FROM accounts")).fetchall()
+    assert rows == []
+
+    user_data = get_user_data()
+    uow = unit_of_work.SqlAlchemyUnitOfWork(postgres_session_factory)
+    with uow:
+        user = user_models.User.create_user(**user_data)
+        account = user_models.Account()
+        account.set_user(user)
+        uow.accounts.add(account)
+        uow.commit()
+
+    # rows = session.execute(text(
+    #     "SELECT version_number, user FROM accounts"
+    # )).fetchall()
+
+    # assert [(1, user_data['username'])] == rows

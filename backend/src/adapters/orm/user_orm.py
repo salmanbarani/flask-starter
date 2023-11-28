@@ -77,6 +77,7 @@ def start_mappers():
         } 
         )
 
+
 @event.listens_for(user_models.Account, "load")
 def receive_load(account, _):
     account.events = []
