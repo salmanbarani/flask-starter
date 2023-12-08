@@ -20,8 +20,8 @@ def get_user_data(username="sample-username", email="sample@email.com", password
     }
 
 
-def test_user_repository(sqlite_session_factory):
-    session = sqlite_session_factory()
+def test_user_repository(session_factory):
+    session = session_factory()
     repo = user_repository.SqlAlchemyUserRepository(session)
 
     account1 = user_models.Account()

@@ -25,10 +25,13 @@ up:
 down:
 	$(COMPOSE_RUN) down --remove-orphans
 
+stop_postgres:
+	$(COMPOSE_RUN) down postgres --remove-orphans
+
 logs:
 	$(COMPOSE_RUN) logs 
 
-test: up
+test : stop_postgres up
 	$(COMPOSE_RUN) run --rm --no-deps --entrypoint=pytest api ./tests/unit ./tests/integration ./tests/e2e
 
 sh:
@@ -54,3 +57,5 @@ isort-diff:
 
 isort:
 	$(COMPOSE_RUN) exec api isort . --skip env --skip migrations
+
+all: down build up test
